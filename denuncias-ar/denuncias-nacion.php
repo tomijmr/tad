@@ -1,9 +1,9 @@
 <?php
 // Configuración de Base de Datos
 $host = 'localhost';
-$user = 'root';
-$pass = ''; // Por defecto en XAMPP
-$dbname = 'tad_db';
+$user = 'c2632136_tad';
+$pass = 'goSO85futa'; // Por defecto en XAMPP
+$dbname = 'c2632136_tad';
 
 // Crear conexión
 $conn = new mysqli($host, $user, $pass);
@@ -56,7 +56,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Manejo de Archivos
     $archivo_path = "";
     if (isset($_FILES['archivo']) && $_FILES['archivo']['error'] == 0) {
-        $target_dir = "uploads/";
+        $target_dir = __DIR__ . "/uploads/";
+        if (!file_exists($target_dir)) {
+            mkdir($target_dir, 0777, true);
+        }
         $archivo_nombre = time() . "_" . basename($_FILES["archivo"]["name"]);
         $target_file = $target_dir . $archivo_nombre;
         $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
@@ -64,9 +67,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Permitir ciertos formatos
         if($imageFileType == "jpg" || $imageFileType == "png" || $imageFileType == "jpeg" || $imageFileType == "pdf") {
             if (move_uploaded_file($_FILES["archivo"]["tmp_name"], $target_file)) {
-                $archivo_path = $target_file;
+                // Guardamos ruta relativa para la DB o absoluta según prefieras. 
+                // Para links web, mejor relativa desde el root de la web.
+                // Pero en la DB estamos guardando lo que sea.
+                // Ajustemos para guardar la ruta relativa web: "uploads/" + nombre
+                $archivo_path = "uploads/" . $archivo_nombre;
             } else {
-                $mensaje_estado = "<div class='alert error'>Hubo un error al subir su archivo.</div>";
+                $mensaje_estado = "<div class='alert error'>Hubo un error al subir su archivo. Verifique permisos en la carpeta uploads.</div>";
             }
         } else {
              $mensaje_estado = "<div class='alert error'>Solo se permiten archivos JPG, JPEG, PNG y PDF.</div>";
@@ -78,7 +85,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         VALUES ('$dni', '$nombre', '$email', '$telefono', '$provincia', '$localidad', '$es_anonima', '$denuncia', '$archivo_path')";
 
         if ($conn->query($sql_insert) === TRUE) {
-            $mensaje_estado = "<div class='alert success'>Denuncia enviada exitosamente. ID de seguimiento: " . $conn->insert_id . "</div>";
+            // Redirigir a la página de éxito
+            header("Location: denuncia-exito.php");
+            exit();
         } else {
             $mensaje_estado = "<div class='alert error'>Error: " . $sql_insert . "<br>" . $conn->error . "</div>";
         }
@@ -334,6 +343,8 @@ $conn->close();
                     <label for="archivo" class="form-label">Adjuntar Pruebas (Imagen o PDF)</label>
                     <input type="file" id="archivo" name="archivo" class="form-control" accept=".jpg,.jpeg,.png,.pdf">
                 </div>
+                <p>Esta denuncia sera revisada por el equipo legal del Colegio de Abogados de la provincia de Buenos Aires, con el respaldo del Ministerio Publico de la Republica Argentina.</p>
+                <p>El fiscal de turno decidirá sobre la procedencia y seguimiento de la denuncia presentada. El equipo legal puede solicitar documentación o información adicional para completar el proceso.</p>
 
                 <button type="submit" class="btn-submit">Enviar Denuncia</button>
             </form>

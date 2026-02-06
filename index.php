@@ -56,6 +56,9 @@ body {
     border-radius: 4px;
     cursor: pointer;
     font-weight: bold;
+    font-size: 1.2rem;
+    text-decoration: none;
+    text-align: center;
 }
 
 .btn-login :hover {
@@ -164,7 +167,7 @@ body {
                 <strong>Argentina.gob.ar</strong>
             </div>
             <nav>
-                <button class="btn-login">Ingresar</button>
+                <a href="https://autenticar.gob.ar/auth/realms/renaper/protocol/openid-connect/auth?scope=openid&state=leA1ZDkg0tjyZitCvqRG8qXDnHXEdH_MbzCi-I6P_V8.tad&response_type=code&client_id=renaper-idp&redirect_uri=https%3A%2F%2Fautenticar.gob.ar%2Fauth%2Frealms%2Ftad-renaper%2Fbroker%2Frenaper%2Fendpoint" class="btn-login">Ingresar</a>
             </nav>
         </div>
     </header>
@@ -190,7 +193,7 @@ body {
                     <p>Realiza denuncias a nivel nacional, de manera segura y confidencial. </p>
                 </div>
                 <div class="card-footer">
-                    <a href="denuncias-ar/denuncias-nacion.php" class="btn-primary">Realizar denuncia</a>
+                    <a href="denuncias-ar/denuncia.php" class="btn-primary">Realizar denuncia</a>
                 </div>
             </div>
 
