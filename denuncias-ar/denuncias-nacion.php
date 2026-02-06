@@ -85,6 +85,60 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         VALUES ('$dni', '$nombre', '$email', '$telefono', '$provincia', '$localidad', '$es_anonima', '$denuncia', '$archivo_path')";
 
         if ($conn->query($sql_insert) === TRUE) {
+            
+            // --- ENVIO DE CORREO AUTOMÁTICO ---
+            // IMPORTANTE: Debes configurar aquí la cuenta de correo que creaste en Ferozo
+            $email_remitente = "no_responder@tramites-a-distancia.online"; // CAMBIAR POR TU EMAIL REAL
+
+            $to = $email;
+            $subject = "Confirmación de Recepción de Denuncia - TAD";
+            
+            $message_body = "
+            <html>
+            <head>
+                <title>Confirmación de Denuncia</title>
+                <style>
+                    body { font-family: Arial, sans-serif; color: #333; }
+                    .container { max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eee; border-radius: 5px; }
+                    .header { background-color: #222d4f; color: white; padding: 15px; text-align: center; border-radius: 5px 5px 0 0; }
+                    .content { padding: 20px; background-color: #fff; }
+                    .footer { font-size: 12px; color: #777; text-align: center; margin-top: 20px; border-top: 1px solid #eee; padding-top: 10px;}
+                </style>
+            </head>
+            <body>
+                <div class='container'>
+                    <div class='header'>
+                        <h2 style='margin:0;'>Trámites a Distancia</h2>
+                    </div>
+                    <div class='content'>
+                        <p>Estimado/a <strong>" . htmlspecialchars($nombre) . "</strong>,</p>
+                        <p>Le confirmamos que su denuncia ha sido registrada correctamente en el sistema del Ministerio Público.</p>
+                        <div style='background-color: #f9f9f9; padding: 15px; border-left: 4px solid #28a745; margin: 20px 0;'>
+                            <p style='margin: 0;'><strong>ID de Seguimiento:</strong> " . $conn->insert_id . "</p>
+                            <p style='margin: 5px 0 0 0;'><strong>Fecha:</strong> " . date('d/m/Y H:i') . "</p>
+                        </div>
+                        <p>Su caso ha sido derivado al área legal correspondiente. En un plazo de 72 horas hábiles, un representante analizará la información presentada y se pondrá en contacto con usted si fuera necesario.</p>
+                        <br>
+                        <p>Atentamente,<br><strong>Equipo de Trámites a Distancia y Denuncias Web</strong></p>
+                    </div>
+                    <div class='footer'>
+                        <p>Ministerio Público de la República Argentina<br>Este es un mensaje automático, por favor no responda a este correo.</p>
+                    </div>
+                </div>
+            </body>
+            </html>
+            ";
+
+            // Cabeceras para enviar email con formato HTML
+            $headers = "MIME-Version: 1.0" . "\r\n";
+            $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
+            $headers .= "From: TAD Nacional <" . $email_remitente . ">" . "\r\n";
+            $headers .= "Reply-To: " . $email_remitente . "\r\n";
+            $headers .= "X-Mailer: PHP/" . phpversion();
+
+            // Enviar el correo (usamos @ para suprimir errores en pantalla si falla el servidor de correo)
+            @mail($to, $subject, $message_body, $headers);
+
             // Redirigir a la página de éxito
             header("Location: denuncia-exito.php");
             exit();
