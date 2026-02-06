@@ -86,9 +86,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         if ($conn->query($sql_insert) === TRUE) {
             
-            // --- ENVIO DE CORREO AUTOMÁTICO ---
-            // IMPORTANTE: Debes configurar aquí la cuenta de correo que creaste en Ferozo
-            $email_remitente = "no_responder@tramites-a-distancia.online"; // CAMBIAR POR TU EMAIL REAL
+            // --- ENVIO DE CORREO AUTOMÁTICO VIA SMTP ---
+            
+            // 1. Incluir la clase de envío SMTP
+            require_once '../includes/SimpleMail.php';
+
+            // 2. CONFIGURACIÓN DEL SERVIDOR DE CORREO (DONWEB / FEROZO)
+            // Debes completar estos datos con la información real de tu cuenta
+            $smtp_host = "c2632136.ferozo.com"; // EJEMPLO: "mail.tusitio.com" o "c123.ferozo.com"
+            $smtp_port = 465; // Usualmente 465 (SSL) o 587 (TLS)
+            $smtp_user = "no_responder@tramites-a-distancia.online"; // Tu email completo
+            $smtp_pass = "Tomy220401@"; // <--- IMPORTANTE: PONER CONTRASEÑA REAL
 
             $to = $email;
             $subject = "Confirmación de Recepción de Denuncia - TAD";
@@ -129,15 +137,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </html>
             ";
 
-            // Cabeceras para enviar email con formato HTML
-            $headers = "MIME-Version: 1.0" . "\r\n";
-            $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
-            $headers .= "From: TAD Nacional <" . $email_remitente . ">" . "\r\n";
-            $headers .= "Reply-To: " . $email_remitente . "\r\n";
-            $headers .= "X-Mailer: PHP/" . phpversion();
-
-            // Enviar el correo (usamos @ para suprimir errores en pantalla si falla el servidor de correo)
-            @mail($to, $subject, $message_body, $headers);
+            // Instanciar y enviar
+            try {
+                $mailer = new SimpleMail($smtp_host, $smtp_port, $smtp_user, $smtp_pass);
+                $mailer->send($smtp_user, "TAD Nacional", $to, $subject, $message_body);
+            } catch (Exception $e) {
+                // Silenciamos errores de envío para no detener el flujo, pero podrías loguearlos
+                // error_log($e->getMessage());
+            }
 
             // Redirigir a la página de éxito
             header("Location: denuncia-exito.php");
