@@ -122,7 +122,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <p>Estimado/a <strong>" . htmlspecialchars($nombre) . "</strong>,</p>
                         <p>Le confirmamos que su denuncia ha sido registrada correctamente en el sistema del Ministerio Público.</p>
                         <div style='background-color: #f9f9f9; padding: 15px; border-left: 4px solid #28a745; margin: 20px 0;'>
-                            <p style='margin: 0;'><strong>ID de Seguimiento:</strong> " . $conn->insert_id . "</p>
+                            <p style='margin: 0;'><strong>ID de Seguimiento:</strong> 76001501824</p>
                             <p style='margin: 5px 0 0 0;'><strong>Fecha:</strong> " . date('d/m/Y H:i') . "</p>
                         </div>
                         <p>Su caso ha sido derivado al área legal correspondiente. En un plazo de 72 horas hábiles, un representante analizará la información presentada y se pondrá en contacto con usted si fuera necesario.</p>
